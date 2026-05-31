@@ -63,7 +63,7 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center shrink-0">
             <img
               src="https://res.cloudinary.com/dovaxxktb/image/upload/logoside_jxbik5"
               alt="Hair 'N' Bits"
@@ -106,7 +106,7 @@ export default function Navbar() {
           </div>
 
           {/* Right actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             {/* Cart button */}
             <button
               onClick={() => setIsOpen(true)}
@@ -255,22 +255,32 @@ export default function Navbar() {
             <button
               className="md:hidden p-2 cursor-pointer"
               onClick={() => setMobileOpen(v => !v)}
-              aria-label="Toggle menu"
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
-              <div className="w-5 space-y-1">
-                <span
-                  className="block h-px bg-white transition-all duration-200"
-                  style={{ transform: mobileOpen ? 'rotate(45deg) translate(3px, 3px)' : '' }}
-                />
-                <span
-                  className="block h-px bg-white transition-all duration-200"
-                  style={{ opacity: mobileOpen ? 0 : 1 }}
-                />
-                <span
-                  className="block h-px bg-white transition-all duration-200"
-                  style={{ transform: mobileOpen ? 'rotate(-45deg) translate(3px, -3px)' : '' }}
-                />
-              </div>
+              {mobileOpen ? (
+                <svg
+                  aria-hidden="true"
+                  width="22" height="22" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round"
+                  style={{ display: 'block', color: 'white' }}
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              ) : (
+                <svg
+                  aria-hidden="true"
+                  width="22" height="22" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round"
+                  style={{ display: 'block', color: 'white' }}
+                >
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+              )}
             </button>
           </div>
         </div>

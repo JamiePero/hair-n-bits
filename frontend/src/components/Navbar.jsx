@@ -221,7 +221,7 @@ export default function Navbar() {
                           <button
                             type="button"
                             role="menuitem"
-                            onClick={() => { setProfileOpen(false); navigate('/admin') }}
+                            onClick={() => { setProfileOpen(false); navigate('/auth') }}
                             className="w-full text-left px-4 py-2.5 font-sans text-sm cursor-pointer transition-colors hover:bg-white/5 flex items-center gap-2"
                             style={{ color: 'var(--color-gold-deep)' }}
                           >
@@ -244,7 +244,7 @@ export default function Navbar() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => navigate('/admin')}
+                  onClick={() => navigate('/auth')}
                   className="btn-outline text-xs py-2 px-4"
                 >
                   Sign In
@@ -342,7 +342,7 @@ export default function Navbar() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => { navigate('/admin'); setMobileOpen(false) }}
+                    onClick={() => { navigate('/auth'); setMobileOpen(false) }}
                     className="btn-outline text-xs py-2 mt-2 w-full"
                   >
                     Sign In

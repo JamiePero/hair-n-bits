@@ -12,6 +12,7 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import CheckoutPage    from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
 import AdminPage       from './pages/AdminPage'
+import AuthPage        from './pages/AuthPage'
 import NotFoundPage    from './pages/NotFoundPage'
 
 const pageVariants = {
@@ -28,7 +29,7 @@ function AnimatedPage({ children }) {
   )
 }
 
-const HIDE_FOOTER = ['/checkout', '/admin']
+const HIDE_FOOTER = ['/checkout', '/admin', '/auth']
 
 export default function App() {
   const location = useLocation()
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/product/:id" element={<AnimatedPage><ProductDetailPage /></AnimatedPage>} />
           <Route path="/checkout" element={<AnimatedPage><CheckoutPage /></AnimatedPage>} />
           <Route path="/order-success/:orderId" element={<AnimatedPage><OrderSuccessPage /></AnimatedPage>} />
+          <Route path="/auth" element={<AnimatedPage><AuthPage /></AnimatedPage>} />
           <Route path="/admin" element={<AnimatedPage><AdminPage /></AnimatedPage>} />
           <Route path="*" element={<AnimatedPage><NotFoundPage /></AnimatedPage>} />
         </Routes>

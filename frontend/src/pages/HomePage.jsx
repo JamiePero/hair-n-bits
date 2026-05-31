@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import ProductCard from '../components/ProductCard'
 import ProductSkeleton from '../components/ProductSkeleton'
+import ShaderBackground from '../components/ShaderBackground'
 
 const CATEGORIES = [
   {
@@ -43,9 +44,19 @@ const CATEGORIES = [
   },
 ]
 
+const ROTATING_WORDS = ['Wigs', 'Beads', 'Dresses', 'Shoes', 'Jewelry', 'Hair Mesh']
+
 export default function HomePage() {
   const [products, setProducts] = useState([])
   const [loading, setLoading]   = useState(true)
+  const [wordIndex, setWordIndex] = useState(0)
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setWordIndex(i => (i + 1) % ROTATING_WORDS.length)
+    }, 2000)
+    return () => clearInterval(id)
+  }, [])
 
   useEffect(() => {
     async function fetchFeatured() {
@@ -66,17 +77,26 @@ export default function HomePage() {
     <main>
       {/* ── Hero ─────────────────────────────────── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background gradient */}
+
+        {/* Layer 0 — WebGL hair shader (renders first, sits behind everything) */}
+        <ShaderBackground />
+
+        {/* Layer 1 — Brand red glow at top + dark vignette toward bottom.
+            Opacity reduced so the shader shows through. */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(73,1,1,0.7) 0%, rgba(0,0,0,1) 70%)',
+            background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(73,1,1,0.55) 0%, rgba(0,0,0,0.72) 75%)',
+            zIndex: 1,
           }}
         />
-        {/* Decorative lines */}
-        <div className="absolute inset-0 opacity-10"
+
+        {/* Layer 2 — Subtle horizontal rule lines */}
+        <div
+          className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(180,8,8,0.3) 80px, rgba(180,8,8,0.3) 81px)',
+            zIndex: 2,
           }}
         />
 
@@ -97,12 +117,12 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold leading-none mb-6"
+            className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold leading-none mb-6 whitespace-nowrap"
             style={{ color: 'var(--color-white)' }}
           >
             Hair{' '}
             <em className="not-italic" style={{ color: 'var(--color-gold-light)' }}>'N'</em>
-            <br />Bits
+            {' '}Bits
           </motion.h1>
 
           {/* Tagline */}
@@ -110,11 +130,51 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="font-display italic text-xl sm:text-2xl mb-10"
+            className="font-display italic text-xl sm:text-2xl mb-6"
             style={{ color: 'rgba(255,255,255,0.75)' }}
           >
             Your beauty, beautifully stocked.
           </motion.p>
+
+          {/* Rotating word */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="flex items-center justify-center mb-10"
+          >
+            {/*
+              Clip only on the Y axis — height is fixed so words slide in/out
+              vertically. Width is unconstrained so every word fits fully.
+            */}
+            <div
+              className="relative overflow-hidden"
+              style={{ height: '2.75rem' }}
+            >
+              {/* Invisible spacer sized to the longest word so the container
+                  never collapses and never clips horizontally */}
+              <span
+                className="invisible font-display font-bold text-2xl sm:text-3xl tracking-wide whitespace-nowrap px-1"
+                aria-hidden="true"
+              >
+                Hair Mesh
+              </span>
+
+              <AnimatePresence mode="popLayout">
+                <motion.span
+                  key={ROTATING_WORDS[wordIndex]}
+                  initial={{ y: '100%', opacity: 0 }}
+                  animate={{ y: '0%',   opacity: 1 }}
+                  exit={{    y: '-110%', opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+                  className="absolute inset-0 flex items-center justify-center font-display font-bold text-2xl sm:text-3xl tracking-wide whitespace-nowrap"
+                  style={{ color: '#F4CD59' }}
+                >
+                  {ROTATING_WORDS[wordIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+          </motion.div>
 
           {/* CTA */}
           <motion.div
@@ -131,16 +191,14 @@ export default function HomePage() {
             </Link>
           </motion.div>
 
-          {/* Scroll hint */}
+          {/* Scroll indicator — animated line only, no text */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2"
+            aria-hidden="true"
           >
-            <span className="font-sans text-xs tracking-widest uppercase" style={{ color: 'var(--color-grey)' }}>
-              Scroll
-            </span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}

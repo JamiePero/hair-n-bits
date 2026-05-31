@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
@@ -28,13 +30,19 @@ export function AuthProvider({ children }) {
   const loginWithEmail = (email, password) =>
     signInWithEmailAndPassword(auth, email, password)
 
+  const signUpWithEmail = async (name, email, password) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password)
+    if (name) await updateProfile(cred.user, { displayName: name })
+    return cred
+  }
+
   const loginWithGoogle = () =>
     signInWithPopup(auth, new GoogleAuthProvider())
 
   const logout = () => signOut(auth)
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, loginWithEmail, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, loginWithEmail, signUpWithEmail, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   )

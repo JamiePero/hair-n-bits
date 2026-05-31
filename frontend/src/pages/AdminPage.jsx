@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   collection, getDocs, addDoc, doc, updateDoc, deleteDoc,
@@ -32,26 +33,22 @@ const TABS = ['dashboard', 'products', 'orders']
 const EMPTY_FORM = { name: '', category: 'wigs', price: '', stock: '', description: '', imageUrl: '' }
 
 export default function AdminPage() {
-  const { user, isAdmin, loginWithEmail, loginWithGoogle, loading: authLoading } = useAuth()
+  const { user, isAdmin, loading: authLoading } = useAuth()
+  const navigate = useNavigate()
   const [tab, setTab]           = useState('dashboard')
   const [products, setProducts] = useState([])
   const [orders, setOrders]     = useState([])
   const [loadingData, setLoadingData] = useState(false)
 
   // Product form
-  const [editingProduct, setEditingProduct] = useState(null) // null = new
+  const [editingProduct, setEditingProduct] = useState(null)
   const [formOpen, setFormOpen]  = useState(false)
   const [form, setForm]          = useState(EMPTY_FORM)
-  const [imgFile, setImgFile]    = useState(null)   // raw File object
-  const [imgPreview, setImgPreview] = useState('')  // local object URL for preview
+  const [imgFile, setImgFile]    = useState(null)
+  const [imgPreview, setImgPreview] = useState('')
   const [uploading, setUploading]   = useState(false)
   const [saving, setSaving]         = useState(false)
   const fileInputRef = useRef(null)
-
-  // Auth form
-  const [authEmail, setAuthEmail] = useState('')
-  const [authPass, setAuthPass]   = useState('')
-  const [authLoading2, setAuthLoading2] = useState(false)
 
   /* ── Load data ─────────────────────────────── */
   useEffect(() => {
@@ -67,70 +64,21 @@ export default function AdminPage() {
     .finally(() => setLoadingData(false))
   }, [isAdmin])
 
-  /* ── Auth ──────────────────────────────────── */
+  /* ── Auth guard ────────────────────────────── */
   if (authLoading) {
     return <div className="min-h-screen flex items-center justify-center"><SpinnerIcon /></div>
   }
 
-  if (!user || !isAdmin) {
-    return (
-      <main className="min-h-screen flex items-center justify-center px-6 py-16 pt-24">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="surface-card p-10 max-w-sm w-full"
-        >
-          <h1 className="font-display text-3xl font-bold mb-2 text-center" style={{ color: 'var(--color-white)' }}>
-            Admin Login
-          </h1>
-          <p className="font-sans text-xs text-center mb-8" style={{ color: 'var(--color-grey)' }}>
-            Hair 'N' Bits — Restricted Access
-          </p>
+  if (!user) {
+    // Not signed in → send to login, remember they wanted /admin
+    navigate('/auth', { replace: true, state: { from: '/admin' } })
+    return null
+  }
 
-          <form
-            onSubmit={async e => {
-              e.preventDefault()
-              setAuthLoading2(true)
-              try {
-                await loginWithEmail(authEmail, authPass)
-              } catch (err) {
-                toast.error('Invalid credentials', { style: { background: '#1a1a1a', color: '#fff' } })
-              } finally {
-                setAuthLoading2(false)
-              }
-            }}
-            className="space-y-4"
-          >
-            <div>
-              <label htmlFor="auth-email" className="block font-sans text-xs tracking-widest uppercase mb-1.5" style={{ color: 'var(--color-grey)' }}>Email</label>
-              <input id="auth-email" type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} className="input-field" placeholder="admin@hairnbits.com" />
-            </div>
-            <div>
-              <label htmlFor="auth-pass" className="block font-sans text-xs tracking-widest uppercase mb-1.5" style={{ color: 'var(--color-grey)' }}>Password</label>
-              <input id="auth-pass" type="password" required value={authPass} onChange={e => setAuthPass(e.target.value)} className="input-field" placeholder="••••••••" />
-            </div>
-            <button type="submit" disabled={authLoading2} className="btn-primary w-full py-3 flex items-center justify-center gap-2">
-              {authLoading2 ? <SmallSpinner /> : null} Sign In
-            </button>
-          </form>
-
-          <div className="relative my-5">
-            <div style={{ height: '1px', background: 'rgba(89,87,87,0.4)' }} />
-            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-3 font-sans text-xs" style={{ background: 'var(--surface-2)', color: 'var(--color-grey)' }}>or</span>
-          </div>
-          <button
-            onClick={async () => {
-              try { await loginWithGoogle() } catch (err) {
-                toast.error('Google sign-in failed')
-              }
-            }}
-            className="btn-outline w-full py-3 flex items-center justify-center gap-2"
-          >
-            <GoogleIcon /> Continue with Google
-          </button>
-        </motion.div>
-      </main>
-    )
+  if (!isAdmin) {
+    // Signed in but not admin → back to home
+    navigate('/', { replace: true })
+    return null
   }
 
   /* ── Dashboard stats ───────────────────────── */
@@ -608,10 +556,5 @@ const CameraIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-gold-deep)' }}>
     <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
     <circle cx="12" cy="13" r="4"/>
-  </svg>
-)
-const GoogleIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-    <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 01-5.279-5.28 5.27 5.27 0 015.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 00-8.934 8.934 8.907 8.907 0 008.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"/>
   </svg>
 )

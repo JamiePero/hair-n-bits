@@ -5,7 +5,6 @@ import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import ProductCard from '../components/ProductCard'
 import ProductSkeleton from '../components/ProductSkeleton'
-import ShaderBackground from '../components/ShaderBackground'
 
 const CATEGORIES = [
   {
@@ -78,25 +77,17 @@ export default function HomePage() {
       {/* ── Hero ─────────────────────────────────── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
 
-        {/* Layer 0 — WebGL hair shader (renders first, sits behind everything) */}
-        <ShaderBackground />
-
-        {/* Layer 1 — Brand red glow at top + dark vignette toward bottom.
-            Opacity reduced so the shader shows through. */}
+        {/* Background gradient */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(73,1,1,0.55) 0%, rgba(0,0,0,0.72) 75%)',
-            zIndex: 1,
+            background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(73,1,1,0.7) 0%, rgba(0,0,0,1) 70%)',
           }}
         />
-
-        {/* Layer 2 — Subtle horizontal rule lines */}
-        <div
-          className="absolute inset-0 opacity-10"
+        {/* Decorative lines */}
+        <div className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(180,8,8,0.3) 80px, rgba(180,8,8,0.3) 81px)',
-            zIndex: 2,
           }}
         />
 

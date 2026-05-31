@@ -63,13 +63,12 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <span
-              className="font-display text-xl font-bold tracking-tight"
-              style={{ color: 'var(--color-white)' }}
-            >
-              Hair <span style={{ color: 'var(--color-gold-light)' }}>'N'</span> Bits
-            </span>
+          <Link to="/" className="flex items-center">
+            <img
+              src="https://res.cloudinary.com/dovaxxktb/image/upload/logoside_jxbik5"
+              alt="Hair 'N' Bits"
+              style={{ height: '50px', width: 'auto', display: 'block' }}
+            />
           </Link>
 
           {/* Desktop nav */}

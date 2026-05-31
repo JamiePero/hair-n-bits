@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Design Tokens ─────────────────────────────────── */
+:root {
+  --color-black:       #000000;
+  --color-red-dark:    #490101;
+  --color-red-mid:     #7D0909;
+  --color-red-primary: #B40808;
+  --color-red-bright:  #E62525;
+  --color-grey:        #595757;
+  --color-white:       #FFFFFF;
+  --color-gold-deep:   #C89116;
+  --color-gold-light:  #F4CD59;
+
+  /* Surfaces */
+  --surface-1: #0a0a0a;
+  --surface-2: #111111;
+  --surface-3: #1a1a1a;
+  --surface-4: #222222;
+
+  /* Z-index scale */
+  --z-base:    10;
+  --z-card:    20;
+  --z-drawer:  30;
+  --z-modal:   40;
+  --z-toast:   50;
+  --z-nav:     60;
+}
+
+/* ─── Base Reset ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-black);
+  color: var(--color-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── Typography ────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  line-height: 1.2;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-black); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-red-mid);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-red-primary); }
+
+/* ─── Utilities ─────────────────────────────────────────── */
+.font-display { font-family: 'Playfair Display', serif; }
+.font-body    { font-family: 'DM Sans', sans-serif; }
+
+/* Gold shimmer CTA effect */
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    var(--color-gold-deep) 0%,
+    var(--color-gold-light) 40%,
+    var(--color-gold-deep) 60%,
+    var(--color-gold-light) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Red gradient hero overlay */
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-red-dark) 0%,
+    var(--color-red-mid) 30%,
+    var(--color-red-primary) 60%,
+    var(--color-red-bright) 100%
+  );
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--surface-3) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-gold-deep);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Component Layer ───────────────────────────────────── */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-sm font-sans font-medium text-sm tracking-wider uppercase transition-all duration-200 cursor-pointer;
+    background: var(--color-red-primary);
+    color: var(--color-white);
+  }
+  .btn-primary:hover {
+    background: var(--color-red-bright);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(180, 8, 8, 0.4);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-sm font-sans font-medium text-sm tracking-wider uppercase transition-all duration-200 cursor-pointer;
+    background: var(--color-gold-deep);
+    color: var(--color-black);
+  }
+  .btn-gold:hover {
+    background: var(--color-gold-light);
+    box-shadow: 0 4px 20px rgba(200, 145, 22, 0.4);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-sm font-sans font-medium text-sm tracking-wider uppercase transition-all duration-200 cursor-pointer border;
+    border-color: var(--color-grey);
+    color: var(--color-white);
+    background: transparent;
+  }
+  .btn-outline:hover {
+    border-color: var(--color-red-primary);
+    color: var(--color-red-bright);
+  }
+
+  .card-product {
+    background: var(--surface-2);
+    border: 1px solid var(--surface-3);
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+  .card-product:hover {
+    border-color: var(--color-red-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(180, 8, 8, 0.25);
+  }
+
+  .price-tag {
+    font-family: 'Playfair Display', serif;
+    color: var(--color-gold-light);
+    font-weight: 600;
+  }
+
+  .badge-category {
+    @apply text-xs px-2 py-0.5 rounded-sm font-sans font-medium uppercase tracking-widest;
+    background: rgba(73, 1, 1, 0.6);
+    color: var(--color-gold-light);
+    border: 1px solid var(--color-red-dark);
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-sm text-sm font-sans transition-all duration-200 outline-none;
+    background: var(--surface-3);
+    border: 1px solid var(--surface-4);
+    color: var(--color-white);
+  }
+  .input-field::placeholder { color: var(--color-grey); }
+  .input-field:focus {
+    border-color: var(--color-red-primary);
+    box-shadow: 0 0 0 3px rgba(180, 8, 8, 0.15);
+  }
+
+  .surface-card {
+    background: var(--surface-2);
+    border: 1px solid var(--surface-3);
+    border-radius: 2px;
+  }
+}
